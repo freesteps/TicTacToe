@@ -22,10 +22,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnReset = new System.Windows.Forms.Button();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.SuspendLayout();
-            // 
-            // tableLayoutPanel1
-            // 
+            this.SuspendLayout(); 
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -36,7 +33,6 @@
                 this.tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
             }
 
-            // Добавление кнопок
             for (int row = 0; row < 3; row++)
             {
                 for (int col = 0; col < 3; col++)

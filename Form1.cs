@@ -1,7 +1,3 @@
-using System;
-using System.Drawing;
-using System.Windows.Forms;
-
 namespace TicTacToe
 {
     public partial class Form1 : Form

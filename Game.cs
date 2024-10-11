@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TicTacToe
+﻿namespace TicTacToe
 {
 
     public enum GameState
@@ -17,8 +15,8 @@ namespace TicTacToe
         public GameState State { get; private set; }
         public Player Winner { get; private set; }
 
-        public event Action<Player, int, int> MoveMade;
-        public event Action<GameState, Player> GameEnded;
+        public event Action<Player, int, int>? MoveMade;
+        public event Action<GameState, Player>? GameEnded;
 
         public Game()
         {
@@ -61,19 +59,15 @@ namespace TicTacToe
 
         private bool CheckWin(int row, int col)
         {
-            // Check row
             if (Board[row, 0] == CurrentPlayer && Board[row, 1] == CurrentPlayer && Board[row, 2] == CurrentPlayer)
                 return true;
 
-            // Check column
             if (Board[0, col] == CurrentPlayer && Board[1, col] == CurrentPlayer && Board[2, col] == CurrentPlayer)
                 return true;
 
-            // Check diagonal (top-left to bottom-right)
             if (row == col && Board[0, 0] == CurrentPlayer && Board[1, 1] == CurrentPlayer && Board[2, 2] == CurrentPlayer)
                 return true;
 
-            // Check diagonal (top-right to bottom-left)
             if (row + col == 2 && Board[0, 2] == CurrentPlayer && Board[1, 1] == CurrentPlayer && Board[2, 0] == CurrentPlayer)
                 return true;
 
