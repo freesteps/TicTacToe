@@ -1,3 +1,6 @@
+using System;
+using System.Windows.Forms;
+
 namespace TicTacToe
 {
     static class Program
@@ -7,7 +10,26 @@ namespace TicTacToe
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            // —оздаем и показываем форму выбора режима
+            using (ModeSelectionForm modeForm = new ModeSelectionForm())
+            {
+                var result = modeForm.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    // ѕолучаем выбранный режим
+                    GameMode selectedMode = modeForm.SelectedMode;
+
+                    // «апускаем основную форму с выбранным режимом
+                    Application.Run(new Form1(selectedMode));
+                }
+                else
+                {
+                    // ≈сли пользователь закрыл форму без выбора, завершаем приложение
+                    Application.Exit();
+                }
+            }
         }
     }
 }
