@@ -15,7 +15,6 @@
         private Button button20;
         private Button button21;
         private Button button22;
-        private Button btnRating;
 
         protected override void Dispose(bool disposing)
         {
@@ -40,7 +39,6 @@
             this.button00 = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.btnRating = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -160,9 +158,9 @@
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(12, 318);
+            this.btnReset.Location = new System.Drawing.Point(115, 318);
             this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(75, 23);
+            this.btnReset.Size = new System.Drawing.Size(94, 23);
             this.btnReset.TabIndex = 1;
             this.btnReset.Text = "Сбросить";
             this.btnReset.UseVisualStyleBackColor = true;
@@ -170,7 +168,7 @@
             // 
             // lblStatus
             // 
-            this.lblStatus.Location = new System.Drawing.Point(39, 353);
+            this.lblStatus.Location = new System.Drawing.Point(52, 344);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(230, 23);
             this.lblStatus.TabIndex = 2;
@@ -178,25 +176,15 @@
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblStatus.Click += new System.EventHandler(this.lblStatus_Click);
             // 
-            // btnRating
-            // 
-            this.btnRating.Location = new System.Drawing.Point(226, 318);
-            this.btnRating.Name = "btnRating";
-            this.btnRating.Size = new System.Drawing.Size(75, 23);
-            this.btnRating.TabIndex = 3;
-            this.btnRating.Text = "Рейтинг";
-            this.btnRating.UseVisualStyleBackColor = true;
-            this.btnRating.Click += new System.EventHandler(this.btnRating_Click);
-            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(325, 404);
-            this.Controls.Add(this.btnRating);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Form1";
             this.Text = "Крестики-нолики";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 

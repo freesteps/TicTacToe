@@ -1,29 +1,76 @@
-﻿// Database.cs
-using Npgsql;
-using System;
-using System.Data;
+﻿using System;
+using System.Linq;
+using System.Windows.Forms;
 using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace TicTacToe
 {
+    // Настройка контекста базы данных
+    public class TicTacToeContext : DbContext
+    {
+        public DbSet<User> Users { get; set; }
+
+        // Переопределяем метод OnConfiguring для подключения к базе данных PostgreSQL
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                // Указываем строку подключения к базе данных PostgreSQL
+                optionsBuilder.UseNpgsql("Host=194.87.84.68;Port=5432;Username=windows_pc;Password=new_password;Database=tictactoe_db");
+            }
+        }
+
+        // Переопределяем метод OnModelCreating для настройки схемы и таблицы
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Указываем схему 'user_list' для таблицы 'Users'
+            modelBuilder.Entity<User>().ToTable("users", "user_list");
+
+            // Настроим имена столбцов согласно схеме
+            modelBuilder.Entity<User>()
+                .Property(u => u.UserLogin)
+                .HasColumnName("user_login");
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.UserPassword)
+                .HasColumnName("user_password");
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.WinUser)
+                .HasColumnName("win_user");
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.LoseUser)
+                .HasColumnName("lose_user");
+
+            // Устанавливаем user_login как первичный ключ
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.UserLogin);
+        }
+    }
+
+    // Класс пользователя
+    public class User
+    {
+        public string UserLogin { get; set; }  // Логин пользователя (ключ)
+        public string UserPassword { get; set; }
+        public int WinUser { get; set; }
+        public int LoseUser { get; set; }
+    }
+
+    // Класс для работы с базой данных
     public class Database
     {
-        private string connectionString = "Host=192.168.3.20;Port=5432;Username=windows_pc;Password=new_password;Database=tictactoe_db";
-
+        // Метод для проверки существования пользователя
         public bool UserExists(string login)
         {
             try
             {
-                using (var conn = new NpgsqlConnection(connectionString))
+                using (var context = new TicTacToeContext())
                 {
-                    conn.Open();
-                    string query = "SELECT COUNT(*) FROM user_list.users WHERE user_login = @login";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("login", login);
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
-                        return count > 0;
-                    }
+                    var user = context.Users.SingleOrDefault(u => u.UserLogin == login);
+                    return user != null;
                 }
             }
             catch (Exception ex)
@@ -33,23 +80,17 @@ namespace TicTacToe
             }
         }
 
+        // Метод для валидации пользователя
         public bool ValidateUser(string login, string password)
         {
             try
             {
-                using (var conn = new NpgsqlConnection(connectionString))
+                using (var context = new TicTacToeContext())
                 {
-                    conn.Open();
-                    string query = "SELECT user_password FROM user_list.users WHERE user_login = @login";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("login", login);
-                        var storedPassword = cmd.ExecuteScalar() as string;
-                        if (storedPassword == null)
-                            return false;
-                        // Проверка хеша пароля
-                        return BCrypt.Net.BCrypt.Verify(password, storedPassword);
-                    }
+                    var user = context.Users.SingleOrDefault(u => u.UserLogin == login);
+                    if (user == null)
+                        return false;
+                    return BCrypt.Net.BCrypt.Verify(password, user.UserPassword);
                 }
             }
             catch (Exception ex)
@@ -59,20 +100,20 @@ namespace TicTacToe
             }
         }
 
+        // Метод для регистрации нового пользователя
         public void RegisterUser(string login, string hashedPassword)
         {
             try
             {
-                using (var conn = new NpgsqlConnection(connectionString))
+                using (var context = new TicTacToeContext())
                 {
-                    conn.Open();
-                    string query = "INSERT INTO user_list.users (user_login, user_password) VALUES (@login, @password)";
-                    using (var cmd = new NpgsqlCommand(query, conn))
+                    var user = new User
                     {
-                        cmd.Parameters.AddWithValue("login", login);
-                        cmd.Parameters.AddWithValue("password", hashedPassword);
-                        cmd.ExecuteNonQuery();
-                    }
+                        UserLogin = login,
+                        UserPassword = hashedPassword,
+                    };
+                    context.Users.Add(user);
+                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -81,22 +122,23 @@ namespace TicTacToe
             }
         }
 
+        // Метод для обновления статистики пользователя
         public void UpdateStatistics(string login, bool isWin)
         {
             try
             {
-                using (var conn = new NpgsqlConnection(connectionString))
+                using (var context = new TicTacToeContext())
                 {
-                    conn.Open();
-                    string query = isWin
-                        ? "UPDATE user_list.users SET win_user = win_user + 1 WHERE user_login = @login"
-                        : "UPDATE user_list.users SET lose_user = lose_user + 1 WHERE user_login = @login";
+                    var user = context.Users.SingleOrDefault(u => u.UserLogin == login);
+                    if (user == null)
+                        return;
 
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("login", login);
-                        cmd.ExecuteNonQuery();
-                    }
+                    if (isWin)
+                        user.WinUser++;
+                    else
+                        user.LoseUser++;
+
+                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -105,21 +147,18 @@ namespace TicTacToe
             }
         }
 
-        public DataTable GetRatings()
+        // Метод для получения рейтингов пользователей
+        public object GetRatings()
         {
             try
             {
-                using (var conn = new NpgsqlConnection(connectionString))
+                using (var context = new TicTacToeContext())
                 {
-                    conn.Open();
-                    string query = "SELECT user_login, win_user, lose_user FROM user_list.users ORDER BY win_user DESC";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var adapter = new NpgsqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        return dt;
-                    }
+                    var ratings = context.Users
+                        .OrderByDescending(u => u.WinUser)
+                        .Select(u => new { u.UserLogin, u.WinUser, u.LoseUser })
+                        .ToList();
+                    return ratings;
                 }
             }
             catch (Exception ex)

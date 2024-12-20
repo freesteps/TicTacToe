@@ -243,10 +243,9 @@ namespace TicTacToe
             // Ќичего не происходит, просто событие по клику
         }
 
-        private void btnRating_Click(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            RatingForm ratingForm = new RatingForm();
-            ratingForm.ShowDialog();
+
         }
     }
 }

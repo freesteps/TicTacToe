@@ -1,5 +1,4 @@
-﻿// Game.cs
-using System;
+﻿using System;
 
 namespace TicTacToe
 {
@@ -17,7 +16,6 @@ namespace TicTacToe
         public GameState State { get; private set; }
         public Player? Winner { get; private set; }
 
-        // Координаты победной линии
         public Tuple<Tuple<int, int>, Tuple<int, int>>? WinningLine { get; private set; }
 
         public event Action<Player, int, int>? MoveMade;
@@ -41,8 +39,6 @@ namespace TicTacToe
                 return false;
 
             Board[row, col] = CurrentPlayer.Marker;
-
-            // Вызов MoveMade перед проверкой выигрыша
             MoveMade?.Invoke(CurrentPlayer, row, col);
 
             if (CheckWin(row, col))

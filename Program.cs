@@ -1,3 +1,5 @@
+using System;
+using System.Windows.Forms;
 using TicTacToe;
 
 static class Program
@@ -14,7 +16,7 @@ static class Program
 
         if (loginResult == DialogResult.OK)
         {
-            Player player1 = loginForm.LoggedInPlayer;  // Игрок 1, который прошел вход
+            Player player1 = loginForm.LoggedInPlayer;
 
             // Показать форму выбора режима
             using (ModeSelectionForm modeForm = new ModeSelectionForm())
@@ -32,7 +34,6 @@ static class Program
                     {
                         PlayerLoginForm secondPlayerLoginForm = new PlayerLoginForm();
 
-                        // Убедиться, что второй игрок не использует тот же логин
                         bool isLoginUnique = false;
                         while (!isLoginUnique)
                         {
@@ -46,7 +47,7 @@ static class Program
                                 }
                                 else
                                 {
-                                    player2 = secondPlayerLoginForm.LoggedInPlayer; // Игрок 2
+                                    player2 = secondPlayerLoginForm.LoggedInPlayer;
                                     isLoginUnique = true;
                                 }
                             }
@@ -60,7 +61,6 @@ static class Program
                     }
                     else
                     {
-                        // Если режим одиночной игры, второй игрок не нужен
                         player2 = null;
                     }
 
@@ -81,4 +81,3 @@ static class Program
         }
     }
 }
-
