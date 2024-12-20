@@ -1,4 +1,5 @@
-﻿namespace TicTacToe
+﻿// GameMode.cs
+namespace TicTacToe
 {
     public enum GameMode
     {
